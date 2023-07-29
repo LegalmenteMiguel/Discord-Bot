@@ -29,17 +29,34 @@ client.on('messageCreate', async message => {
         // Se muestra que el bot esta escribiendo
         await message.channel.sendTyping();
 
+        // Para tener un log de conversacion con el bot
+        /* 
+            // Se obtienen los ultimos 10 mensajes del canal
+            let prevMessage = await message.channel.messages.fetch({ limit: 10 });
+            prevMessage.reverse();
+            // prevMessage.sort((a, b) => a - b);
+
+            // Se crea un log de conversacion
+            let conversationLog = '';
+            prevMessage.forEach(msg => {
+                conversationLog += `\n${msg.author.username}: ${msg.content}`;
+            });
+        */ 
+
         // Se envia el mensaje a OpenAI
         const gptResponse = await openai.createCompletion({
             model: 'text-davinci-003',
             prompt: `${client.user.username} es un bot amistoso.\n
-            ${client.user.username}: Hola, como puedo ayudarte?\n
+            ${client.user.username}: Hola, ¿cómo puedo ayudarte?\n
             ${message.author.username}: ${message.content}\n
             ${client.user.username}:`,
+            // prompt: `${client.user.username} es un bot amistoso.\n
+            // ${client.user.username}: Hola, ¿cómo puedo ayudarte?\n
+            // ${conversationLog}\n
+            // ${client.user.username}:`,
             temperature: 0.2,
-            max_tokens: 50,
-            stop: ['\n', "ChatGPT:"]
-        })
+            max_tokens: 50
+        });
 
         // Se envia la respuesta de OpenAI
         message.reply(`${gptResponse.data.choices[0].text}`);
@@ -50,4 +67,4 @@ client.on('messageCreate', async message => {
 
 // Logeamos al bot en Discord
 client.login(process.env.DISCORD_TOKEN);
-console.log('ChatGPT Bot is online');
+console.log('ChatGPT Bot is online!');
